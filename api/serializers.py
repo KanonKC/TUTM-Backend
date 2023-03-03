@@ -1,11 +1,20 @@
 from rest_framework import serializers
 from .models import *
+from .youtube import getVideoData
 
 class QueueSerializer(serializers.ModelSerializer):
-    model = Queue
-    fields = "__all__"
+    class Meta:
+        model = Queue
+        fields = "__all__"
 
     def create(self,validate_data):
+        extend = getVideoData(validate_data['url'])
+        validate_data["title"] = extend['title']
+        validate_data["channel_title"] = extend['channel_title']
+        validate_data["description"] = extend['description']
+        validate_data["thumbnail"] = extend['thumbnail']
+        validate_data["url"] = extend['url']
+        validate_data["duration"] = extend['duration']
         return Queue.objects.create(**validate_data)
 
     def update(self,instance,validate_data):

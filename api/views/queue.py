@@ -9,24 +9,16 @@ from django.forms.models import model_to_dict
 @api_view([GET,POST])
 def all_music(request):
     if request.method == POST:
-        queue = Queue(url=request.data['url'])
-        queue.save()
-        return Response(model_to_dict(queue),status=status.HTTP_201_CREATED)
-        # serializer = QueueSerializer(data=request.data)
-        # print("OK",str(serializer))
-        # # print("POST",serializer.is_valid())
-        # if serializer.is_valid():
-        #     print("POST")
-        #     serializer.save()
-        #     print("POST")
-        #     return Response(serializer.data,status=status.HTTP_201_CREATED)
-        # else:
-        #     print("NO")
-        #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        serializer = QueueSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     elif request.method == GET:
         queues = Queue.objects.filter(is_played=False)
-        # serializer = QueueSerializer(queues,many=True)
-        return Response({'queues':[model_to_dict(q) for q in queues]},status=status.HTTP_200_OK)
+        serializer = QueueSerializer(queues,many=True)
+        return Response({'queues': serializer.data},status=status.HTTP_200_OK)
 
 @api_view([DELETE])
 def manage_music(request,queue_id):
@@ -38,3 +30,11 @@ def manage_music(request,queue_id):
     if request.method == DELETE:
         queue.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view([DELETE])
+def clear_queue(request):
+    queues = Queue.objects.filter(is_played=False)
+    for music in queues:
+        music.is_played = True
+        music.save()
+    return Response(status=status.HTTP_204_NO_CONTENT)
