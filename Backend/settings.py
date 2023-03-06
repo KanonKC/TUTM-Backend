@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-7me8ohb1@^a=hh5srv82*4+82xk5yfh&03gi51l$s#ff@6v^h('
-
+IPV4 = config('DHCP_IPV4')
+PORT = config('BACKEND_PORT')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -33,7 +35,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
     "http://192.168.0.7:3000",
-    "http://10.2.1.165:3000"
+    "http://10.2.1.165:3000",
+    f"http://{IPV4}:{PORT}"
 ]
 
 CORS_ALLOW_METHODS = [
