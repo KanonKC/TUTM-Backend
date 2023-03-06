@@ -32,4 +32,6 @@ def getVideoData(url):
         "duration": secondFormat(contentDetails['items'][0]['contentDetails']['duration'])
     }
 
-# print(getVideoData('hBONI483Z-8'))
+def search(text):
+    result = requests.get(f"https://youtube.googleapis.com/youtube/v3/search?q={text}&type=video&part=snippet&key={CREDENTIAL}").json()
+    return [i['snippet'] for i in result['items']]
