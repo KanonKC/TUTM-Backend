@@ -23,6 +23,8 @@ def secondFormat(duration):
 def getVideoData(url):
     snippet = requests.get(f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={url}&key={CREDENTIAL}").json()
     contentDetails = requests.get(f"https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id={url}&key={CREDENTIAL}").json()
+    if 'error' in snippet:
+        return None
     return {
         "title": snippet['items'][0]['snippet']['title'],
         "channel_title": snippet['items'][0]['snippet']['channelTitle'],
