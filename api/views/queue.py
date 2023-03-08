@@ -19,7 +19,7 @@ def all_music(request):
         except IndexError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
     elif request.method == GET:
-        queues = Queue.objects.filter(is_played=False)
+        queues = Queue.objects.filter(is_cleared=False)
         serializer = QueueSerializer(queues,many=True)
         return Response({'queues': serializer.data},status=status.HTTP_200_OK)
 
@@ -27,7 +27,7 @@ def all_music(request):
 def manage_music(request,queue_id):
     queue = Queue.objects.get(queue_id=queue_id)
     if request.method == PUT:
-        queue.is_played = request.data.is_played
+        queue.is_cleared = request.data.is_cleared
         queue.save()
         return Response(model_to_dict(queue),status=status.HTTP_202_ACCEPTED)
     if request.method == DELETE:
@@ -36,8 +36,8 @@ def manage_music(request,queue_id):
 
 @api_view([DELETE])
 def clear_queue(request):
-    queues = Queue.objects.filter(is_played=False)
+    queues = Queue.objects.filter(is_cleared=False)
     for music in queues:
-        music.is_played = True
+        music.is_cleared = True
         music.save()
     return Response(status=status.HTTP_204_NO_CONTENT)

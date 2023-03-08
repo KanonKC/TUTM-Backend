@@ -10,4 +10,5 @@ class Queue(models.Model):
     thumbnail =  models.CharField(max_length=1000,blank=True,null=True)
     url = models.CharField(max_length=100)
     duration = models.IntegerField(blank=True,null=True)
-    is_played = models.BooleanField(blank=True,default=False)
+    is_cleared = models.BooleanField(blank=True,default=False)
+    played_count = models.IntegerField(blank=True,default=0)
