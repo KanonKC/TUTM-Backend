@@ -9,12 +9,15 @@ from django.forms.models import model_to_dict
 @api_view([GET,POST])
 def all_music(request):
     if request.method == POST:
-        serializer = QueueSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = QueueSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data,status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        except IndexError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
     elif request.method == GET:
         queues = Queue.objects.filter(is_played=False)
         serializer = QueueSerializer(queues,many=True)

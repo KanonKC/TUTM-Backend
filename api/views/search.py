@@ -9,4 +9,5 @@ from ..youtube import search
 
 @api_view([GET])
 def video_search(request,query:str):
+    print(query)
     return Response({"result": search(query)},status=status.HTTP_200_OK)
