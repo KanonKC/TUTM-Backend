@@ -41,3 +41,10 @@ def clear_queue(request):
         music.is_cleared = True
         music.save()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view([PUT])
+def played_increment(request,queue_id:int):
+    queue = Queue.objects.get(queue_id=queue_id)
+    queue.played_count += 1
+    queue.save()
+    return Response(model_to_dict(queue),status=status.HTTP_200_OK)
