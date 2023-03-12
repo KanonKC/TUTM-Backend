@@ -20,3 +20,16 @@ class QueueSerializer(serializers.ModelSerializer):
     def update(self,instance,validate_data):
         instance.save()
         return instance
+
+class PlaylistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Playlist
+        fields = "__all__"
+    
+    def create(self,validate_data):
+        return Playlist.objects.create(**validate_data)
+
+    def update(self,instance,validate_data):
+        instance.current_queue_id = validate_data.get("current_queue_id",instance.current_queue_id)
+        instance.save()
+        return instance
