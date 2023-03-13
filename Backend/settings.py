@@ -22,8 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-7me8ohb1@^a=hh5srv82*4+82xk5yfh&03gi51l$s#ff@6v^h('
-IPV4 = config('DHCP_IPV4')
-PORT = config('BACKEND_PORT')
+IPV4 = config('REACT_APP_DHCP_IPV4')
+PORT = config('REACT_APP_FRONTEND_PORT')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -34,7 +34,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
-    "http://192.168.0.7:3000",
+    # "http://192.168.0.7:3000",
     "http://10.2.1.165:3000",
     f"http://{IPV4}:{PORT}"
 ]
