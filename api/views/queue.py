@@ -10,9 +10,22 @@ from django.forms.models import model_to_dict
 def all_queues(request,playlist_id:int):
     playlist = Playlist.objects.get(playlist_id=playlist_id)
     queues = Queue.objects.filter(playlist_id=playlist_id)
+
     if request.method == GET:
-        serialize = QueueSerializer(queues,many=True)
-        return Response(serialize.data,status=status.HTTP_200_OK)
+        # serialize = QueueSerializer(queues,many=True)
+        # return Response(serialize.data,status=status.HTTP_200_OK)
+        result = []
+        for queue in queues:
+            
+            queue_serialize = QueueSerializer(queue)
+            video_serialize = YoutubeVideoSerializer(queue.video_id)
+
+            result.append({
+                **queue_serialize.data,
+                "video": video_serialize.data
+            })
+        
+        return Response({"queues": result},status=status.HTTP_200_OK)
     
     if request.method == POST:
         try:

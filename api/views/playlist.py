@@ -19,3 +19,32 @@ def all_playlists(request):
         playlists = Playlist.objects.all()
         serializer = PlaylistSerializer(playlists,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+
+@api_view([PUT])
+def play_next(request,playlist_id:int):
+    playlist = Playlist.objects.get(playlist_id=playlist_id)
+    length = len(Queue.objects.filter(playlist_id=playlist_id))
+
+    playlist.current_index = (playlist.current_index + 1) % length
+    playlist.save()
+
+    serialize = PlaylistSerializer(playlist)
+    return Response(serialize.data,status=status.HTTP_202_ACCEPTED)
+
+@api_view([PUT])
+def play_prev(request,playlist_id:int):
+    playlist = Playlist.objects.get(playlist_id=playlist_id)
+    length = len(Queue.objects.filter(playlist_id=playlist_id))
+
+    playlist.current_index = (playlist.current_index - 1) % length
+    playlist.save()
+
+    serialize = PlaylistSerializer(playlist)
+    return Response(serialize.data,status=status.HTTP_202_ACCEPTED)
+
+@api_view([PUT])
+def play_algorithm(request,playlist_id:int):
+    playlist = Playlist.objects.get(playlist_id=playlist_id)
+    queues = Queue.objects.filter(playlist_id=playlist_id)
+
+    min_played = min(queues,key=lambda queue: queue.played_count)
