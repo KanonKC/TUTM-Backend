@@ -37,6 +37,9 @@ def all_queues(request,playlist_id:int):
             else:
                 return Response(serialize.errors,status=status.HTTP_400_BAD_REQUEST)
         finally:
+            if not playlist.current_index and playlist.current_index != 0:
+                playlist.current_index = 0
+                playlist.save()
             youtube_video = YoutubeVideo.objects.get(youtube_id=request.data['youtube_id'])
 
             queue = Queue(

@@ -15,11 +15,17 @@ from .views import queue,search,playlist
 
 urlpatterns = [
     path('playlists',playlist.all_playlists),
+    path('playlists/<int:playlist_id>/play/next',playlist.play_next),
+    path('playlists/<int:playlist_id>/play/prev',playlist.play_prev),
+    path('playlists/<int:playlist_id>/play/algorithm',playlist.play_algorithm),
     
     path('playlists/<int:playlist_id>/queues',queue.all_queues),
 
     path('queues/<int:queue_id>',queue.manage_queue),
     path('queues/<int:queue_id>/increment',queue.increment_count),
+
+    path('search/video/<str:query>',search.video),
+    path('search/playlist/<str:id>',search.playlist),
 ]
 
 '''
@@ -28,10 +34,10 @@ Playlist
 [x] Create Playlist
 (playlists/playlist_id)
 
-[ ] Next/Prev Music
+[x] Next/Prev Music
 (playlists/playlist_id/play/<next/prev>)
 
-[ ] Next Music by Algorithm
+[x] Next Music by Algorithm
 (playlists/playlist_id/play/algorithm)
 
 
@@ -57,6 +63,6 @@ Queue Control
 
 
 Searching
-[ ] Search Video
-[ ] Search Playlist
+[x] Search Video
+[x] Search Playlist
 '''

@@ -46,5 +46,18 @@ def play_prev(request,playlist_id:int):
 def play_algorithm(request,playlist_id:int):
     playlist = Playlist.objects.get(playlist_id=playlist_id)
     queues = Queue.objects.filter(playlist_id=playlist_id)
-
-    min_played = min(queues,key=lambda queue: queue.played_count)
+    
+    start = playlist.current_index
+    len_queues = len(queues)
+    min_played_count = min(queues,key=lambda queue: queue.played_count).played_count
+    
+    for i in range(1,len_queues):
+        index = (start+i) % len_queues
+        # print((start,i,len_queues),index,queues[index].queue_id,queues[index].played_count)
+        if queues[index].played_count == min_played_count:
+            playlist.current_index = index
+            playlist.save()
+            break
+    
+    serialize = PlaylistSerializer(playlist)
+    return Response(serialize.data,status=status.HTTP_200_OK)
