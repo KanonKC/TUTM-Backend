@@ -18,6 +18,7 @@ urlpatterns = [
     
     path('playlists/<int:playlist_id>/queues',queue.all_queues),
 
+    path('queues/<int:queue_id>',queue.manage_queue),
     path('queues/<int:queue_id>/increment',queue.increment_count),
 ]
 
@@ -51,7 +52,7 @@ Queue Control
 [x] Add Count ( youtube_id)
 (queues/queue_id/increment)
 
-[ ] Remove Music from Queue (queue_id)
+[x] Remove Music from Queue (queue_id)
 (queues/queue_id)
 
 

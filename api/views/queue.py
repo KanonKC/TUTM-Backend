@@ -44,9 +44,11 @@ def all_queues(request,playlist_id:int):
 @api_view([GET,DELETE])
 def manage_queue(request,queue_id:int):
     queue = Queue.objects.get(queue_id=queue_id)
+    video = YoutubeVideo.objects.get(queue__queue_id=queue_id)
     if request.method == GET:
         serialize = QueueSerializer(queue)
-        return Response(serialize.data,status=status.HTTP_200_OK)
+        youtube_serialize = YoutubeVideoSerializer(video)
+        return Response({**serialize.data,"video":youtube_serialize.data},status=status.HTTP_200_OK)
     if request.method == DELETE:
         queue.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

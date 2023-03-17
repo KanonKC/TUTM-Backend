@@ -19,4 +19,3 @@ def all_playlists(request):
         playlists = Playlist.objects.all()
         serializer = PlaylistSerializer(playlists,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
-    
