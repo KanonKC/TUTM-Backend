@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from ..constants import GET,POST,PUT,DELETE
 from ..models import *
 from rest_framework import status
-from ..serializers import PlaylistSerializer,QueueSerializer
+from ..serializers import PlaylistSerializer,QueueSerializer,YoutubeVideoSerializer
 from django.forms.models import model_to_dict
 
 @api_view([GET,POST])
@@ -19,6 +19,28 @@ def all_playlists(request):
         playlists = Playlist.objects.all()
         serializer = PlaylistSerializer(playlists,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+
+@api_view([GET])
+def manage_playlist(request,playlist_id:int):
+    playlist = Playlist.objects.get(playlist_id=playlist_id)
+    serialize = PlaylistSerializer(playlist)
+
+    if playlist.current_index != None:
+        queue = Queue.objects.filter(playlist_id=playlist_id)[playlist.current_index]
+        video_serialize = YoutubeVideoSerializer(queue.video_id)
+        return Response({**serialize.data, "video":video_serialize.data},status=status.HTTP_200_OK)
+    else:
+        return Response(serialize.data,status=status.HTTP_200_OK)
+
+@api_view([PUT])
+def play_index(request,playlist_id:int,index:int):
+    playlist = Playlist.objects.get(playlist_id=playlist_id)
+
+    playlist.current_index = index
+    playlist.save()
+
+    serialize = PlaylistSerializer(playlist)
+    return Response(serialize.data,status=status.HTTP_202_ACCEPTED)
 
 @api_view([PUT])
 def play_next(request,playlist_id:int):

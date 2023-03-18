@@ -54,6 +54,8 @@ def all_queues(request,playlist_id:int):
             return Response({**queue_serialize.data, "video": youtube_serizlize.data},status=status.HTTP_201_CREATED)
 
     if request.method == DELETE:
+        playlist.current_index = None
+        playlist.save()
         queues.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

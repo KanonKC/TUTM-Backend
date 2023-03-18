@@ -15,6 +15,8 @@ from .views import queue,search,playlist
 
 urlpatterns = [
     path('playlists',playlist.all_playlists),
+    path('playlists/<int:playlist_id>',playlist.manage_playlist),
+    path('playlists/<int:playlist_id>/play/index/<int:index>',playlist.play_index),
     path('playlists/<int:playlist_id>/play/next',playlist.play_next),
     path('playlists/<int:playlist_id>/play/prev',playlist.play_prev),
     path('playlists/<int:playlist_id>/play/algorithm',playlist.play_algorithm),

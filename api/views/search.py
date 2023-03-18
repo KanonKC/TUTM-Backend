@@ -9,10 +9,10 @@ from ..youtube import search_video,search_playlist
 
 @api_view([GET])
 def video(request,query:str):
-    print(query)
+    # print(query)
     return Response({"result": search_video(query)},status=status.HTTP_200_OK)
 
 @api_view([GET])
 def playlist(request,id:str):
-    print(id)
+    # print(id)
     return Response({"result": search_playlist(id)},status=status.HTTP_200_OK)
