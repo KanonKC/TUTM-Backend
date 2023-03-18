@@ -63,11 +63,21 @@ def all_queues(request,playlist_id:int):
 def manage_queue(request,queue_id:int):
     queue = Queue.objects.get(queue_id=queue_id)
     video = YoutubeVideo.objects.get(queue__queue_id=queue_id)
+    playlist = queue.playlist_id
+    
     if request.method == GET:
         serialize = QueueSerializer(queue)
         youtube_serialize = YoutubeVideoSerializer(video)
         return Response({**serialize.data,"video":youtube_serialize.data},status=status.HTTP_200_OK)
     if request.method == DELETE:
+        queues = Queue.objects.filter(playlist_id=playlist.playlist_id)
+        for i in range(playlist.current_index):
+            print(queues[i],queues[i].queue_id,queue_id)
+            if queues[i].queue_id == queue_id:
+                print("WORKING")
+                playlist.current_index -= 1
+                playlist.save()
+                break
         queue.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
