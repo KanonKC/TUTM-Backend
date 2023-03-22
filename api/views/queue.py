@@ -8,56 +8,59 @@ from django.forms.models import model_to_dict
 
 @api_view([GET,POST,DELETE])
 def all_queues(request,playlist_id:int):
-    playlist = Playlist.objects.get(playlist_id=playlist_id)
-    queues = Queue.objects.filter(playlist_id=playlist_id)
+    try:
+        playlist = Playlist.objects.get(playlist_id=playlist_id)
+        queues = Queue.objects.filter(playlist_id=playlist_id)
 
-    if request.method == GET:
-        # serialize = QueueSerializer(queues,many=True)
-        # return Response(serialize.data,status=status.HTTP_200_OK)
-        result = []
-        for queue in queues:
+        if request.method == GET:
+            # serialize = QueueSerializer(queues,many=True)
+            # return Response(serialize.data,status=status.HTTP_200_OK)
+            result = []
+            for queue in queues:
+                
+                queue_serialize = QueueSerializer(queue)
+                video_serialize = YoutubeVideoSerializer(queue.video_id)
+
+                result.append({
+                    **queue_serialize.data,
+                    "video": video_serialize.data
+                })
             
-            queue_serialize = QueueSerializer(queue)
-            video_serialize = YoutubeVideoSerializer(queue.video_id)
-
-            result.append({
-                **queue_serialize.data,
-                "video": video_serialize.data
-            })
+            return Response({"queues": result},status=status.HTTP_200_OK)
         
-        return Response({"queues": result},status=status.HTTP_200_OK)
-    
-    if request.method == POST:
-        try:
-            YoutubeVideo.objects.get(youtube_id=request.data['youtube_id'])    
-        except YoutubeVideo.DoesNotExist:
-            serialize = YoutubeVideoSerializer(data=request.data)
-            if serialize.is_valid():
-                serialize.save()
-            else:
-                return Response(serialize.errors,status=status.HTTP_400_BAD_REQUEST)
-        finally:
-            if not playlist.current_index and playlist.current_index != 0:
-                playlist.current_index = 0
-                playlist.save()
-            youtube_video = YoutubeVideo.objects.get(youtube_id=request.data['youtube_id'])
+        if request.method == POST:
+            try:
+                YoutubeVideo.objects.get(youtube_id=request.data['youtube_id'])    
+            except YoutubeVideo.DoesNotExist:
+                serialize = YoutubeVideoSerializer(data=request.data)
+                if serialize.is_valid():
+                    serialize.save()
+                else:
+                    return Response(serialize.errors,status=status.HTTP_400_BAD_REQUEST)
+            finally:
+                if not playlist.current_index and playlist.current_index != 0:
+                    playlist.current_index = 0
+                    playlist.save()
+                youtube_video = YoutubeVideo.objects.get(youtube_id=request.data['youtube_id'])
 
-            queue = Queue(
-                video_id = youtube_video,
-                playlist_id = playlist,
-            )
-            queue.save()
+                queue = Queue(
+                    video_id = youtube_video,
+                    playlist_id = playlist,
+                )
+                queue.save()
 
-            queue_serialize = QueueSerializer(queue)
-            youtube_serizlize = YoutubeVideoSerializer(youtube_video)
-            
-            return Response({**queue_serialize.data, "video": youtube_serizlize.data},status=status.HTTP_201_CREATED)
+                queue_serialize = QueueSerializer(queue)
+                youtube_serizlize = YoutubeVideoSerializer(youtube_video)
+                
+                return Response({**queue_serialize.data, "video": youtube_serizlize.data},status=status.HTTP_201_CREATED)
 
-    if request.method == DELETE:
-        playlist.current_index = None
-        playlist.save()
-        queues.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.method == DELETE:
+            playlist.current_index = None
+            playlist.save()
+            queues.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+    except Playlist.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view([GET,DELETE])
 def manage_queue(request,queue_id:int):

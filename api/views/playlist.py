@@ -22,15 +22,18 @@ def all_playlists(request):
 
 @api_view([GET])
 def manage_playlist(request,playlist_id:int):
-    playlist = Playlist.objects.get(playlist_id=playlist_id)
-    serialize = PlaylistSerializer(playlist)
+    try:
+        playlist = Playlist.objects.get(playlist_id=playlist_id)
+        serialize = PlaylistSerializer(playlist)
 
-    if playlist.current_index != None:
-        queue = Queue.objects.filter(playlist_id=playlist_id)[playlist.current_index]
-        video_serialize = YoutubeVideoSerializer(queue.video_id)
-        return Response({**serialize.data, "video":video_serialize.data},status=status.HTTP_200_OK)
-    else:
-        return Response(serialize.data,status=status.HTTP_200_OK)
+        if playlist.current_index != None:
+            queue = Queue.objects.filter(playlist_id=playlist_id)[playlist.current_index]
+            video_serialize = YoutubeVideoSerializer(queue.video_id)
+            return Response({**serialize.data, "video":video_serialize.data},status=status.HTTP_200_OK)
+        else:
+            return Response(serialize.data,status=status.HTTP_200_OK)
+    except Playlist.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view([PUT])
 def play_index(request,playlist_id:int,index:int):
