@@ -59,7 +59,7 @@ def all_queues(request,playlist_id:int):
             playlist.save()
             queues.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-    except Playlist.DoesNotExist:
+    except:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view([GET,DELETE])

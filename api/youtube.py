@@ -35,7 +35,7 @@ def getVideoData(url):
     }
 
 def search_video(text):
-    result = requests.get(f"https://youtube.googleapis.com/youtube/v3/search?q={text}&type=video&part=snippet&key={CREDENTIAL}").json()
+    result = requests.get(f"https://youtube.googleapis.com/youtube/v3/search?q={text}&type=video&maxResults=10&part=snippet&key={CREDENTIAL}").json()
     if 'error' in result:
         return []
     return [{**i['snippet'],"id":i['id']} for i in result['items']]
