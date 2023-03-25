@@ -34,8 +34,15 @@ def getVideoData(url):
         "duration": secondFormat(contentDetails['items'][0]['contentDetails']['duration'])
     }
 
-def search(text):
-    result = requests.get(f"https://youtube.googleapis.com/youtube/v3/search?q={text}&type=video&part=snippet&key={CREDENTIAL}").json()
+def search_video(text):
+    result = requests.get(f"https://youtube.googleapis.com/youtube/v3/search?q={text}&type=video&maxResults=10&part=snippet&key={CREDENTIAL}").json()
+    if 'error' in result:
+        return []
+    return [{**i['snippet'],"id":i['id']} for i in result['items']]
+
+def search_playlist(playlistId):
+    result = requests.get(f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlistId}&maxResults=50&key={CREDENTIAL}").json()
+    print(result)
     if 'error' in result:
         return []
     return [{**i['snippet'],"id":i['id']} for i in result['items']]
